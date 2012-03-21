@@ -58,7 +58,7 @@ module Vagrant
         system(@nfs_restart_command)
       end
 
-      def nfs_prune(valid_ids)
+      def nfs_prune(id)
         return if !File.exist?("/etc/exports")
 
         @logger.info("Pruning invalid NFS entries...")
@@ -67,16 +67,13 @@ module Vagrant
 
         File.read("/etc/exports").lines.each do |line|
           if line =~ /^# VAGRANT-BEGIN: (.+?)$/
-            if valid_ids.include?($1.to_s)
-              @logger.debug("Valid ID: #{$1.to_s}")
-            else
+            if id.include?($1.to_s)
+              @logger.debug("Pruning ID: #{$1.to_s}")
               if !output
                 # We want to warn the user but we only want to output once
                 @ui.info I18n.t("vagrant.hosts.bsd.nfs_prune")
                 output = true
               end
-
-              @logger.info("Invalid ID, pruning: #{$1.to_s}")
               nfs_cleanup($1.to_s)
             end
           end

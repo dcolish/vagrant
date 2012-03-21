@@ -8,8 +8,7 @@ module Vagrant
 
         def call(env)
           if env[:host]
-            valid_ids = env[:vm].driver.read_vms
-            env[:host].nfs_prune(valid_ids)
+            env[:host].nfs_prune(env[:vm].uuid)
           end
 
           @app.call(env)
